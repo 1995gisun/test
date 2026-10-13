@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>롯데마켓 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<main>
+  <h1 id="title" style="font-size:18px">오늘의 추천 상품</h1>
+  <div class="grid" id="list"></div>
+</main>
+<script>
+  const q = new URLSearchParams(location.search).get('q') || '';
+  const items = search(q);
+  if (q) document.getElementById('title').textContent = `'${q}' 검색 결과 ${items.length}건`;
+  document.getElementById('list').innerHTML = items.length
+    ? items.map((p) => `<a class="card" href="product.html?id=${p.id}"><div class="img">${p.img}</div><div>${p.name}</div><div class="price">${won(p.price)}</div></a>`).join('')
+    : '<div class="empty">검색 결과가 없습니다.</div>';
+  maybePopup();
+</script>
+</body>
+</html>

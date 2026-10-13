@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>장바구니 - 롯데마켓 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<main>
+  <h1 style="font-size:18px">장바구니</h1>
+  <div id="lines"></div>
+  <div id="summary"></div>
+</main>
+<script>
+  function draw() {
+    const cart = loadCart();
+    const lines = document.getElementById('lines');
+    const summary = document.getElementById('summary');
+    if (!cart.length) { lines.innerHTML = '<div class="empty">장바구니가 비어 있습니다.</div>'; summary.innerHTML = ''; return; }
+    lines.innerHTML = cart.map((l) => { const p = product(l.id); return `<div class="row"><span>${p.img} ${p.name} × ${l.qty}</span><b>${won(p.price * l.qty)}</b></div>`; }).join('');
+    const sub = cart.reduce((s, l) => s + product(l.id).price * l.qty, 0);
+    const disc = Number(localStorage.getItem('coupon') || 0);
+    summary.innerHTML = `
+      <div class="row"><span>상품금액</span><span>${won(sub)}</span></div>
+      <div class="row"><span>할인 <span class="coupon-link" onclick="document.querySelector('.coupon-box').classList.toggle('open')">쿠폰적용</span></span><span>-${won(disc)}</span></div>
+      <div class="coupon-box"><input id="code" placeholder="쿠폰코드"><button class="btn gray" id="apply">적용</button></div>
+      <p id="cmsg" class="hint"></p>
+      <div class="row total"><span>결제예정금액</span><span>${won(Math.max(sub - disc, 0))}</span></div>
+      <p><a class="btn" href="checkout.html">주문하기</a></p>`;
+    document.getElementById('apply').onclick = () => {
+      const code = document.getElementById('code').value.trim().toUpperCase();
+      if (code === COUPON.code && sub >= COUPON.min) { localStorage.setItem('coupon', COUPON.amount); draw(); document.getElementById('cmsg').textContent = '쿠폰이 적용되었습니다.'; }
+      else document.getElementById('cmsg').textContent = '사용할 수 없는 쿠폰입니다.';
+    };
+  }
+  draw();
+</script>
+</body>
+</html>

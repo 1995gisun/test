@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주문 완료 - 롯데마켓 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<main style="text-align:center">
+  <div style="font-size:64px">✅</div>
+  <h1 style="font-size:20px">주문이 완료되었습니다</h1>
+  <p id="info"></p>
+  <a class="btn" href="index.html">쇼핑 계속하기</a>
+</main>
+<script>
+  const s = new URLSearchParams(location.search);
+  document.getElementById('info').textContent = `주문번호 ${s.get('no')} · 결제금액 ${won(Number(s.get('amount')))}`;
+</script>
+</body>
+</html>
