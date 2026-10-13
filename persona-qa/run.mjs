@@ -6,7 +6,7 @@
 //   node run.mjs                       # 모든 페르소나 × 모든 목표, 1회씩
 //   node run.mjs --persona elder,busy  # 일부 페르소나만
 //   node run.mjs --repeat 3            # 조합마다 3회 (성공률 측정용)
-//   node run.mjs --url https://stg.example.com   # 데모 쇼핑몰 대신 다른 사이트
+//   node run.mjs --url https://stg.example.com --goals goals.live.json   # 데모 쇼핑몰 대신 실제 사이트
 //
 // 인증: claude CLI의 로그인 상태를 그대로 쓴다.
 // Enterprise 계정 토큰(CLAUDE_CODE_OAUTH_TOKEN) 또는 ANTHROPIC_API_KEY / Bedrock 환경변수 중 무엇이든 동작한다.
@@ -14,14 +14,14 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, readdirSync, renameSync, existsSync, createWriteStream } from 'node:fs';
-import { join, extname, dirname } from 'node:path';
+import { join, extname, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const args = parseArgs(process.argv.slice(2));
 const personas = JSON.parse(readFileSync(join(ROOT, 'personas.json'), 'utf8')).filter((p) => !args.persona || args.persona.split(',').includes(p.id));
-const goals = JSON.parse(readFileSync(join(ROOT, 'goals.json'), 'utf8')).filter((g) => !args.goal || args.goal.split(',').includes(g.id));
+const goals = JSON.parse(readFileSync(resolve(ROOT, args.goals || 'goals.json'), 'utf8')).filter((g) => !args.goal || args.goal.split(',').includes(g.id));
 const repeat = Number(args.repeat || 1);
 const concurrency = Number(args.parallel || 1);
 const timeoutMin = Number(args.timeout || 15);
@@ -135,7 +135,7 @@ async function runOne({ persona, goal, n }, startUrl, runDir) {
   ];
 
   const cliArgs = [
-    '-p', buildPrompt(persona, goal, startUrl),
+    '-p', buildPrompt(persona, goal, startUrl, Boolean(args.url)),
     '--mcp-config', join(dir, 'mcp.json'), '--strict-mcp-config',
     '--allowedTools', 'mcp__playwright',
     '--disallowedTools', ...blocked,
@@ -193,8 +193,15 @@ async function runOne({ persona, goal, n }, startUrl, runDir) {
   return record;
 }
 
-function buildPrompt(persona, goal, startUrl) {
+function buildPrompt(persona, goal, startUrl, live) {
   const profile = Object.entries(goal.profile || {}).map(([k, v]) => `- ${k}: ${v}`).join('\n');
+  // 실제 운영 사이트에서는 실제 주문·가입·개인정보 입력이 일어나지 않도록 막는다.
+  const liveRules = live ? `
+## 실제 운영 사이트 안전 규칙 (페르소나 규칙보다 우선)
+- 로그인, 회원가입, 본인인증, 결제, 주문 확정을 절대 하지 않는다. 그런 화면이 나오면 거기서 멈추고, 그 지점까지를 결과로 기록한다.
+- 이름, 전화번호, 주소, 카드번호 등 어떤 개인정보도 입력하지 않는다.
+- 리뷰 작성, 문의 등록, 알림 신청처럼 사이트에 기록을 남기는 행동은 하지 않는다.
+` : '';
   return `너는 지금부터 쇼핑몰 사용성 테스트에 참여한 가상 고객이다. 아래 인물이 되어 실제로 브라우저를 조작한다.
 
 ## 너는 누구인가
@@ -210,9 +217,8 @@ ${persona.rules.map((r) => `- ${r}`).join('\n')}
 
 ## 목표
 ${goal.goal}
-
-필요하면 아래 정보를 사용한다.
-${profile}
+${goal.success ? `\n성공 기준: ${goal.success}\n` : ''}${liveRules}
+${profile ? `필요하면 아래 정보를 사용한다.\n${profile}` : ''}
 
 ## 진행 방법
 1. ${startUrl} 를 연다.

@@ -46,7 +46,7 @@ node run.mjs                         # 전체 페르소나 × 전체 목표
 node run.mjs --persona elder,blind   # 일부만
 node run.mjs --repeat 3              # 조합마다 3회 → 성공률로 보고
 node run.mjs --parallel 2            # 동시에 2개씩
-node run.mjs --url https://stg.example.com   # 데모 쇼핑몰 대신 다른 사이트
+node run.mjs --url https://www.lotteon.com --goals goals.lotteon.json   # 실제 사이트 (안전 규칙 자동 적용)
 
 node report.mjs results/<실행시각> --traps shop/TRAPS.md   # 데모: 함정 탐지율까지 표시
 node report.mjs results/<실행시각>                         # 실제 사이트용
@@ -68,6 +68,7 @@ node report.mjs results/<실행시각>                         # 실제 사이�
 - **행동 횟수 제한**과 **포기 조건**을 페르소나마다 다르게 둡니다.
 
 ## 실제 사이트에 적용할 때 주의
+- `--url`로 외부 사이트를 지정하면 프롬프트에 **운영 사이트 안전 규칙**이 자동으로 들어갑니다. 로그인, 회원가입, 결제, 주문 확정, 개인정보 입력, 리뷰·문의 등록을 하지 않고 그 직전에서 멈춥니다.
 - 결제는 테스트 환경과 PG 테스트 카드로만 진행하세요. 운영 환경에서는 목표를 "결제 버튼 직전까지"로 쓰면 됩니다.
 - 본인인증, CAPTCHA는 AI가 통과할 수 없으므로 테스트 환경에서 우회 설정이 필요합니다.
 - AI는 매번 조금씩 다르게 행동합니다. 의사결정용 수치가 필요하면 `--repeat`로 여러 번 돌려 성공률을 보세요.
