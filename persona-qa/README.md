@@ -40,19 +40,74 @@
 
 ## 실행
 
-```bash
-npm install
-node run.mjs                         # 전체 페르소나 × 전체 목표
-node run.mjs --persona elder,blind   # 일부만
-node run.mjs --repeat 3              # 조합마다 3회 → 성공률로 보고
-node run.mjs --parallel 2            # 동시에 2개씩
-node run.mjs --url https://www.lotteon.com --goals goals.lotteon.json   # 실제 사이트 (안전 규칙 자동 적용)
+테스트는 **① 실행(`run.mjs`) → ② 리포트 생성(`report.mjs`)** 두 단계입니다. 모든 명령은 `persona-qa` 폴더에서 실행합니다.
 
-node report.mjs results/<실행시각> --traps shop/TRAPS.md   # 데모: 함정 탐지율까지 표시
-node report.mjs results/<실행시각>                         # 실제 사이트용
+### 0. 설치 (처음 한 번)
+
+```bash
+cd persona-qa
+npm install
 ```
 
-`results/<실행시각>/report.html`을 브라우저로 열면 페르소나별 결과, 우선순위 이슈, 단계별 속마음, 녹화 영상을 볼 수 있습니다.
+### 1. 테스트 실행
+
+```bash
+node run.mjs --parallel 2
+```
+
+끝나면 결과가 저장된 폴더 이름(실행 시각)과 다음에 칠 명령어를 알려줍니다.
+
+```
+▶ 4개 실행 (페르소나 4 × 목표 1 × 1회), 대상: http://localhost:4173/index.html
+  · 김순자 (72세) / 생수 주문 + 쿠폰 적용 #1 → 포기 (83s, 행동 17회, 이슈 6건)
+  ...
+✔ 완료: results/2026-10-13T02-02-15
+  리포트 만들기: node report.mjs results/2026-10-13T02-02-15
+```
+
+### 2. 리포트 만들기
+
+위에 나온 폴더 이름을 그대로 넣습니다.
+
+```bash
+node report.mjs results/2026-10-13T02-02-15                         # 실제 사이트용
+node report.mjs results/2026-10-13T02-02-15 --traps shop/TRAPS.md   # 데모 쇼핑몰: 함정 탐지율까지 표시
+```
+
+폴더 이름이 기억나지 않으면 `ls results`로 확인합니다. 가장 아래가 가장 최근 실행입니다.
+
+### 3. 결과 보기
+
+`results/2026-10-13T02-02-15/report.html`을 브라우저로 열면 페르소나별 결과, 우선순위 이슈, 단계별 속마음, 녹화 영상을 볼 수 있습니다.
+
+### 자주 쓰는 실행 예
+
+```bash
+# 데모 쇼핑몰 (기본값)
+node run.mjs --parallel 2
+
+# 롯데하이마트: 최저가 에어컨 장바구니 담기
+node run.mjs --url https://www.e-himart.co.kr/app/display/main --goals goals.himart.json --parallel 2
+
+# 일부 페르소나만, 조합마다 3회씩 (성공률 측정)
+node run.mjs --persona elder,blind --repeat 3
+
+# 내 PC에서 브라우저 창을 띄워 지켜보기
+node run.mjs --headed
+```
+
+| 옵션 | 설명 |
+|---|---|
+| `--url <주소>` | 테스트할 사이트. 생략하면 데모 쇼핑몰. 지정하면 운영 사이트 안전 규칙이 자동 적용됨 |
+| `--goals <파일>` | 목표 파일 (기본 `goals.json`) |
+| `--persona <id,id>` | 일부 페르소나만 실행 (`elder`, `blind`, `foreigner`, `busy`) |
+| `--goal <id>` | 목표 파일 안의 일부 목표만 실행 |
+| `--repeat <N>` | 조합마다 N회 실행해 성공률로 보고 |
+| `--parallel <N>` | 동시에 N개 실행 (기본 1) |
+| `--headed` | 브라우저 창을 띄워서 실행 |
+| `--browser <경로>` | 사용할 Chrome/Chromium 실행 파일 |
+| `--model <모델>` | 페르소나에 쓸 Claude 모델 |
+| `--timeout <분>` | 실행 1건당 제한 시간 (기본 15분) |
 
 ### 준비물
 - Node.js 18 이상
