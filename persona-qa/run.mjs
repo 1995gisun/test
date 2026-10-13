@@ -7,6 +7,7 @@
 //   node run.mjs --persona elder,busy  # 일부 페르소나만
 //   node run.mjs --repeat 3            # 조합마다 3회 (성공률 측정용)
 //   node run.mjs --url https://stg.example.com --goals goals.live.json   # 데모 쇼핑몰 대신 실제 사이트
+//   node run.mjs --headed              # 브라우저 창을 띄워서 실행 (내 PC에서 지켜볼 때)
 //
 // 인증: claude CLI의 로그인 상태를 그대로 쓴다.
 // Enterprise 계정 토큰(CLAUDE_CODE_OAUTH_TOKEN) 또는 ANTHROPIC_API_KEY / Bedrock 환경변수 중 무엇이든 동작한다.
@@ -110,7 +111,7 @@ async function runOne({ persona, goal, n }, startUrl, runDir) {
     browser: {
       browserName: 'chromium',
       isolated: true,
-      launchOptions: { headless: true, ...(browserPath ? { executablePath: browserPath } : {}) },
+      launchOptions: { headless: !args.headed, ...(browserPath ? { executablePath: browserPath } : {}) },
       contextOptions: {
         viewport,
         locale: 'ko-KR',
