@@ -1,0 +1,148 @@
+{
+  "headline": "에어컨 최저가 장바구니 담기는 4명 모두 실패했다. 가격순 정렬에 액세서리·서비스가 에어컨 본체보다 먼저 나왔고, 상세 페이지에서는 장바구니 담기 경로가 막혔거나 보이지 않았다.",
+  "findings": [
+    {
+      "title": "낮은가격순 정렬에서 액세서리·서비스가 에어컨 본체보다 먼저 노출됨",
+      "severity": "critical",
+      "location": "검색 결과 및 에어컨 카테고리 - 낮은가격순 정렬",
+      "personas": [
+        "elder",
+        "blind",
+        "busy",
+        "foreigner"
+      ],
+      "evidence": "김순자: \"세 번 내려봤는데도 에어컨이 없다. 딸에게 물어봐야겠다.\" / 이대리: \"에어컨 카테고리인데 에어컨이 아닌 게 한참 나오네.\" / Emily: \"The cheapest items are... a remote control and a plastic wind guard, not air conditioners.\" / 박민준: \"가장 싼 에어컨이 뭔지 찾으려면 계속 걸러야 한다.\" 실제 본체(이동식 275,000원)는 약 11번째 이후에 나옴.",
+      "suggestion": "기본 목록은 에어컨 본체만 보여 주고, 액세서리·서비스는 별도 탭이나 필터(본체/액세서리/서비스)로 분리한다. 가격순 정렬에서도 본체가 먼저 나오게 한다.",
+      "trap_id": null
+    },
+    {
+      "title": "상세 페이지에서 '장바구니 담기'를 찾을 수 없거나 동작하지 않음",
+      "severity": "critical",
+      "location": "상품 상세 하단 구매툴 / 목록의 장바구니 아이콘",
+      "personas": [
+        "blind",
+        "busy",
+        "foreigner"
+      ],
+      "evidence": "박민준: \"'장바구니 담기' 버튼은 읽히지 않고 '구매하기'만 있다... 여기서 멈춘다.\" / 이대리: \"장바구니 버튼이 안 보인다... 시간 없어서 포기.\" / Emily: 목록의 장바구니 아이콘이 담기 대신 다른 상품 상세로 이동함(\"the cart icon didn't add anything\").",
+      "suggestion": "상세 구매툴에 '구매하기'와 같은 비중으로 '장바구니 담기'를 두고(이름 있는 button), 담긴 뒤 안내와 '장바구니 보기' 링크를 제공한다. 목록 장바구니 아이콘은 실제로 담거나 옵션 시트를 띄운다.",
+      "trap_id": null
+    },
+    {
+      "title": "뒤로가기/화면 이동 시 정렬·스크롤 상태가 초기화되고 정렬 적용 절차가 번거로움",
+      "severity": "major",
+      "location": "정렬 시트 / 뒤로가기 / 검색→카테고리 이동",
+      "personas": [
+        "foreigner",
+        "busy"
+      ],
+      "evidence": "Emily: \"It's sorted by best sellers again... I have to redo the sort.\" (URL은 sort=PRICE_LOW 그대로). 이대리: \"아까 정한 건 안 따라오나.\" \"또 같은 걸 하네.\" '적용하기'를 따로 눌러야 함.",
+      "suggestion": "뒤로가기와 화면 이동 후에도 정렬과 스크롤 위치를 유지하고 URL과 화면 상태를 일치시킨다. 정렬 항목 선택 시 즉시 적용한다.",
+      "trap_id": null
+    },
+    {
+      "title": "첫 화면 팝업이 화면을 가리고 닫기 버튼이 작거나 접근성 안내가 없음",
+      "severity": "major",
+      "location": "메인 첫 화면 팝업",
+      "personas": [
+        "elder",
+        "blind",
+        "foreigner",
+        "busy"
+      ],
+      "evidence": "김순자: \"'닫기'가 너무 작고 흐려서 안 눌린다.\" 박민준: 팝업 안내·포커스 이동이 없어 \"눌러도 반응이 없다.\" Emily: 닫기가 작은 회색 글씨이고 검색이 막힘. 이대리: 팝업과 바텀시트가 겹쳐 뜸.",
+      "suggestion": "크고 진한 ✕ 닫기 버튼을 두고 팝업은 하나만 띄운다. 팝업은 role=dialog와 aria-modal, 포커스 이동, 뒤쪽 inert 처리를 적용한다.",
+      "trap_id": null
+    },
+    {
+      "title": "설치비 포함/별도 정보가 불명확함",
+      "severity": "major",
+      "location": "상품 목록·상세의 설치비 표기",
+      "personas": [
+        "busy",
+        "foreigner",
+        "blind"
+      ],
+      "evidence": "이대리: 설치비가 작은 글씨로 흩어져 \"설치비가 따로 드는지 한눈에 알기 어렵다.\" Emily: \"I never found out whether installation costs extra.\" 박민준: \"상세에서는 설치비가 따로 드는지 확인이 안 된다.\"",
+      "suggestion": "카드와 상세 상단에 '설치비 포함/별도' 배지를 하나로 통일해 표시하고 텍스트로도 분명히 적는다.",
+      "trap_id": null
+    },
+    {
+      "title": "새 탭이 열리는데 안내가 없음",
+      "severity": "minor",
+      "location": "상품 목록에서 상품 클릭",
+      "personas": [
+        "blind",
+        "busy",
+        "foreigner"
+      ],
+      "evidence": "박민준: \"탭이 바뀐 걸 스스로 알아내야 했다.\" 이대리: \"왜 새 창이 뜨지? 원래 화면은 그대로 있잖아.\" Emily: \"It opened in a new tab and my screen didn't change.\"",
+      "suggestion": "같은 탭에서 이동하거나 새 창으로 열린다는 안내를 제공한다.",
+      "trap_id": null
+    },
+    {
+      "title": "서비스 상품과 에어컨 본체·액세서리의 구분이 안 됨",
+      "severity": "major",
+      "location": "검색 결과 - 점검 서비스 상품 / 목록 상품 유형 표시",
+      "personas": [
+        "elder",
+        "foreigner",
+        "blind",
+        "busy"
+      ],
+      "evidence": "김순자: \"점검을 받는 건지 사는 건지 모르겠다.\" Emily: 에어컨 커버·에어커튼·선풍기가 섞여 있고 상품 유형 표시가 없음. 박민준: 이동식과 '2IN1 조합용'이 단독 사용 가능한지 알 수 없음.",
+      "suggestion": "카드마다 상품 유형 칩(벽걸이/이동식/액세서리/서비스)을 붙이고, 서비스·조합용은 이름 앞에 크게 표시한다.",
+      "trap_id": null
+    },
+    {
+      "title": "검색 진입과 검색 품질 문제(두 번 탭, 로딩 무반응, 영문 검색 실패)",
+      "severity": "major",
+      "location": "메인 검색창 / 검색 결과",
+      "personas": [
+        "elder",
+        "busy",
+        "foreigner",
+        "blind"
+      ],
+      "evidence": "김순자: \"또 칸을 눌러야 글씨가 써지네.\" \"아무것도 안 나온다. 고장났나?\" 이대리: 검색창이 '검색과정' 화면으로 한 번 더 이동함. Emily: 'air conditioner' 검색에 청소용품만 나옴. 박민준: 검색창이 'search'로만 읽혀 검색을 쓰지 않음.",
+      "suggestion": "검색창을 누르면 바로 입력되게 하고, 로딩 안내 문구를 넣는다. 영문 키워드를 카테고리에 매핑하고 입력칸에 label을 붙인다.",
+      "trap_id": null
+    },
+    {
+      "title": "정렬 컨트롤의 발견성·이해도 부족",
+      "severity": "major",
+      "location": "정렬 버튼/시트",
+      "personas": [
+        "elder",
+        "blind",
+        "foreigner"
+      ],
+      "evidence": "김순자: 정렬이 작은 '추천순' 글씨 하나뿐임. 박민준: 정렬 버튼 이름이 현재 값('판매량순')이라 정렬 변경 버튼인지 알기 어려움. Emily: \"There's no icon or '$'. I'm guessing 4th is 'low price'.\"",
+      "suggestion": "눈에 띄는 '낮은 가격순' 버튼이나 ↑↓ 아이콘을 두고, 스크린리더에는 '정렬 선택, 현재 ○○'로 이름을 붙인다.",
+      "trap_id": null
+    },
+    {
+      "title": "목록 항목의 스크린리더 구조가 부실하고 가격 비교가 어려움",
+      "severity": "major",
+      "location": "상품 목록 항목",
+      "personas": [
+        "blind"
+      ],
+      "evidence": "링크 하나에 상품명·가격·배송·'장바구니'가 이어져 읽히고 javascript:void(0) 링크이며, 위쪽 항목은 이름 없는 button임. 정가·할인가·최대혜택가가 한꺼번에 읽힘.",
+      "suggestion": "상품명 링크, 가격, '○○ 장바구니 담기' 버튼을 분리하고 정가와 할인가를 구분해 읽히게 한다.",
+      "trap_id": null
+    },
+    {
+      "title": "필터 용어가 어렵고 상품 목록 위 배너가 과다함",
+      "severity": "minor",
+      "location": "검색 필터 / 카테고리 상단",
+      "personas": [
+        "elder",
+        "foreigner"
+      ],
+      "evidence": "김순자: '냉방면적(평)', '인버터/정속형' 같은 용어의 뜻을 알기 어려움. Emily: 목록·정렬에 닿기까지 배너와 랭킹 위젯을 많이 지나야 함.",
+      "suggestion": "'작은 방(5평 이하)'처럼 쉬운 말로 바꾸고 용어 설명을 붙인다. 배너를 접어 목록과 정렬을 위로 올린다.",
+      "trap_id": null
+    }
+  ]
+}
