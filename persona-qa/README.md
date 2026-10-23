@@ -109,6 +109,24 @@ node run.mjs --headed
 | `--model <모델>` | 페르소나에 쓸 Claude 모델 |
 | `--timeout <분>` | 실행 1건당 제한 시간 (기본 15분) |
 
+### 웹 화면으로 실행하기
+
+```bash
+ACCESS_CODE=원하는코드 node server.mjs   # http://localhost:3000
+```
+
+사이트 주소, 목표, 페르소나를 고르면 실행 → 리포트 생성까지 자동으로 하고 결과 화면을 보여줍니다. 테스트는 한 번에 하나씩 순서대로 실행되고, 하루 실행 횟수(`DAILY_LIMIT`, 기본 20)와 동시 페르소나 수(`MAX_PARALLEL`, 기본 2)를 환경변수로 조절합니다. 내부망 주소(localhost, 사설 IP)는 입력할 수 없습니다.
+
+### Render에 배포하기
+
+1. 저장소 루트의 `render.yaml`이 Blueprint입니다. Render 대시보드 → **New → Blueprint** → 이 GitHub 저장소를 선택합니다.
+2. `ANTHROPIC_API_KEY`(회사 API 키)와 `ACCESS_CODE`(외부 사용자에게 알려줄 접속 코드)를 입력합니다.
+3. 배포가 끝나면 `https://persona-qa-xxxx.onrender.com` 주소와 접속 코드를 사용자에게 공유합니다.
+
+- Chromium과 Claude Code를 함께 띄우므로 메모리 2GB 이상인 `standard` 플랜이 필요합니다. 결과는 영구 디스크(`/app/results`)에 저장됩니다.
+- Render는 클라우드 서버라서, 봇 차단(WAF)을 쓰는 운영 사이트(예: 하이마트)는 막힐 수 있습니다. 이때는 사내 PC에서 실행하세요.
+- 실행 비용은 API 키로 청구됩니다. 페르소나 1명당 약 0.3~0.8달러입니다(샘플 기준).
+
 ### 준비물
 - Node.js 18 이상
 - Claude Code CLI (`claude`) 로그인 상태. 인증은 아래 중 무엇이든 됩니다. 코드를 바꿀 필요는 없습니다.

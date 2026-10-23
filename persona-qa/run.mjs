@@ -74,7 +74,8 @@ async function main() {
   if (!personas.length || !goals.length) throw new Error('실행할 페르소나나 목표가 없습니다. --persona / --goal 값을 확인하세요.');
   const server = args.url ? null : await serveShop(Number(args.port || 4173));
   const startUrl = args.url || `http://localhost:${server.address().port}/index.html`;
-  const runId = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  // 웹 서버(server.mjs)는 결과 폴더 이름을 직접 정해서 넘긴다.
+  const runId = args['run-id'] || new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const runDir = join(ROOT, 'results', runId);
   mkdirSync(runDir, { recursive: true });
 
