@@ -90,7 +90,12 @@ let demoGoal = '';
 if (runId) showStatus(runId); else initForm();
 
 async function initForm() {
-  const cfg = await (await fetch('/api/config')).json();
+  let cfg;
+  try { cfg = await readJson(await fetch('/api/config')); } catch (err) {
+    $('form-error').textContent = err.message;
+    $('submit').disabled = true;
+    return;
+  }
   demoGoal = cfg.demoGoal;
   $('code-field').hidden = !cfg.needCode;
   try { $('code').value = localStorage.getItem('pqa-code') || ''; } catch {}
@@ -122,7 +127,7 @@ async function submit(e) {
   $('submit').disabled = true;
   try {
     const res = await fetch('/api/runs', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    const data = await res.json();
+    const data = await readJson(res);
     if (!res.ok) throw new Error(data.error || '실행하지 못했습니다.');
     try { localStorage.setItem('pqa-code', body.code); } catch {}
     location.search = `?run=${encodeURIComponent(data.id)}`;
@@ -132,17 +137,29 @@ async function submit(e) {
   }
 }
 
-async function showStatus(id) {
+// 서버가 재시작 중이면 Render가 JSON이 아닌 빈 응답(502 등)을 준다.
+async function readJson(res) {
+  const text = await res.text();
+  try { return JSON.parse(text); } catch {
+    throw Object.assign(new Error(`서버가 응답하지 않습니다 (HTTP ${res.status}). 서버가 재시작 중이거나 메모리가 부족할 수 있습니다.`), { transient: true });
+  }
+}
+
+async function showStatus(id, retries = 0) {
   $('form-view').hidden = true;
   $('status-view').hidden = false;
   const label = { queued: '대기 중', running: '가상 고객이 사이트를 사용하는 중', reporting: '리포트를 만드는 중', done: '완료', failed: '실패' };
   let s;
   try {
     const res = await fetch(`/api/runs/${encodeURIComponent(id)}`);
-    s = await res.json();
+    s = await readJson(res);
     if (!res.ok) throw new Error(s.error);
   } catch (err) {
-    $('state-text').textContent = err.message || '상태를 불러오지 못했습니다.';
+    // 네트워크 오류나 일시적인 빈 응답은 몇 번 더 기다려 본다.
+    const transient = err.transient || err instanceof TypeError;
+    $('state-text').textContent = transient && retries < 15 ? '서버 응답을 기다리는 중' : (err.message || '상태를 불러오지 못했습니다.');
+    $('state-sub').textContent = transient ? err.message : '';
+    if (transient && retries < 15) { setTimeout(() => showStatus(id, retries + 1), 4000); return; }
     $('dot').className = 'dot bad';
     return;
   }
