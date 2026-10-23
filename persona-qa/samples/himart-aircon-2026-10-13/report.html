@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>가상 고객 테스트 리포트</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 요약 → 매트릭스 → 우선순위 이슈 → 페르소나별 여정(영상) 순으로 내려가는 QA 리포트 */
+:root{--bg:#f5f6f4;--surface:#fff;--fg:#1d2321;--muted:#5f6a66;--line:#dfe3e0;--accent:#0f7a63;--good:#1f8a4c;--warn:#b7791f;--bad:#c2410c;--font:"IBM Plex Sans KR","Malgun Gothic",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121615;--surface:#1a201e;--fg:#e4e9e6;--muted:#97a39e;--line:#2b3431;--accent:#4cc9a6;--good:#5ccf8a;--warn:#e3ab55;--bad:#f2865a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121615;--surface:#1a201e;--fg:#e4e9e6;--muted:#97a39e;--line:#2b3431;--accent:#4cc9a6;--good:#5ccf8a;--warn:#e3ab55;--bad:#f2865a;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.6;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+header{padding-block:40px 0;display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-size:13px;letter-spacing:.06em;color:var(--accent);font-weight:500}
+h1{margin:0;font-size:clamp(24px,4vw,32px);text-wrap:balance}h2{margin:0 0 14px;font-size:19px}h3{margin:0;font-size:16px}
+.muted{color:var(--muted)}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}.kpi b{display:block;font-size:26px;font-variant-numeric:tabular-nums}.kpi span{font-size:13px;color:var(--muted)}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:560px}th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}thead th{font-size:13px;color:var(--muted);font-weight:500}tr:last-child>*{border-bottom:0}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}.pill.good{color:var(--good)}.pill.warn{color:var(--warn)}.pill.bad{color:var(--bad)}
+ol.findings{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.finding{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.sev-critical{border-left-color:var(--bad)}.sev-major{border-left-color:var(--warn)}
+.f-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.sev{font-size:12px;font-weight:700;color:var(--muted)}.sev-critical .sev{color:var(--bad)}.sev-major .sev{color:var(--warn)}
+.trap{font-family:var(--mono);font-size:12px;color:var(--accent);margin-left:auto}
+.f-loc{font-size:13px;color:var(--muted)}blockquote{margin:0;padding-left:10px;border-left:2px solid var(--line);font-size:14px}
+.f-foot{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;align-items:center}.who{display:flex;gap:4px;flex-wrap:wrap}.chip{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 6px}.fix{color:var(--muted);min-width:0}
+.run{background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-bottom:10px}
+.run summary{cursor:pointer;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.run summary:focus-visible{outline:2px solid var(--accent)}
+.run-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:16px;padding:0 16px 16px}
+@media (max-width:820px){.run-body{grid-template-columns:1fr}}
+video{width:100%;border-radius:6px;border:1px solid var(--line);background:#000;max-height:520px}
+.journey{display:flex;flex-direction:column;gap:8px;min-width:0}
+.step{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:start}
+.no{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:2px}
+.page{font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-right:6px;color:var(--muted)}
+.s-act{font-size:14px}.s-thought{font-size:13px;color:var(--muted)}
+.meter{display:flex;gap:2px;padding-top:6px}.meter i{width:6px;height:10px;border-radius:1px;background:var(--line)}.meter i.on{background:var(--warn)}.meter i.on.l4,.meter i.on.l5{background:var(--bad)}
+.quote{margin:8px 0 0;font-weight:500}.err{color:var(--bad);font-size:13px}
+.traps td.hit{color:var(--good);font-weight:700}.traps td.miss{color:var(--muted)}
+</style></head><body><div class="wrap">
+<header>
+  <div class="eyebrow">AI 가상 고객 테스트단 · 2026-10-13T02-08-44</div>
+  <h1>에어컨 최저가 장바구니 담기는 4명 모두 실패했다. 가격순 정렬에 액세서리·서비스가 에어컨 본체보다 먼저 나왔고, 상세 페이지에서는 장바구니 담기 경로가 막혔거나 보이지 않았다.</h1>
+  <div class="muted">대상 https://www.e-himart.co.kr/app/display/main · 페르소나 4명 × 목표 1개</div>
+</header>
+<section class="kpis">
+  <div class="kpi"><b>0/4</b><span>목표 달성</span></div>
+  <div class="kpi"><b>11</b><span>발견한 문제</span></div>
+  <div class="kpi"><b>2</b><span>치명 (구매 실패 원인)</span></div>
+  <div class="kpi"><b>11분</b><span>총 테스트 시간</span></div>
+</section>
+<section><h2>페르소나별 결과</h2><div class="table-wrap"><table>
+  <thead><tr><th>목표</th><th>김순자 (72세)</th><th>박민준 (38세, 전맹 시각장애인)</th><th>Emily (29세, 한국 거주 3개월 차 미국인)</th><th>이대리 (34세, 점심시간에 급하게 주문하는 직장인)</th></tr></thead><tbody>
+    <tr><th scope="row">최저가 에어컨 장바구니 담기</th><td><span class="pill bad">포기</span><div class="sub">행동 10회 · 최대 짜증 5/5</div></td><td><span class="pill bad">진행불가</span><div class="sub">행동 14회 · 최대 짜증 5/5</div></td><td><span class="pill bad">포기</span><div class="sub">행동 29회 · 최대 짜증 5/5</div></td><td><span class="pill bad">포기</span><div class="sub">행동 15회 · 최대 짜증 5/5</div></td></tr></tbody></table></div></section>
+<section><h2>우선 고쳐야 할 문제</h2><ol class="findings">
+    <li class="finding sev-critical">
+      <div class="f-head"><span class="sev">치명</span><h3>낮은가격순 정렬에서 액세서리·서비스가 에어컨 본체보다 먼저 노출됨</h3></div>
+      <div class="f-loc">검색 결과 및 에어컨 카테고리 - 낮은가격순 정렬</div>
+      <blockquote>김순자: &quot;세 번 내려봤는데도 에어컨이 없다. 딸에게 물어봐야겠다.&quot; / 이대리: &quot;에어컨 카테고리인데 에어컨이 아닌 게 한참 나오네.&quot; / Emily: &quot;The cheapest items are... a remote control and a plastic wind guard, not air conditioners.&quot; / 박민준: &quot;가장 싼 에어컨이 뭔지 찾으려면 계속 걸러야 한다.&quot; 실제 본체(이동식 275,000원)는 약 11번째 이후에 나옴.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">김순자</span><span class="chip">박민준</span><span class="chip">이대리</span><span class="chip">Emily</span></span><span class="fix">개선안: 기본 목록은 에어컨 본체만 보여 주고, 액세서리·서비스는 별도 탭이나 필터(본체/액세서리/서비스)로 분리한다. 가격순 정렬에서도 본체가 먼저 나오게 한다.</span></div>
+    </li>
+    <li class="finding sev-critical">
+      <div class="f-head"><span class="sev">치명</span><h3>상세 페이지에서 &#39;장바구니 담기&#39;를 찾을 수 없거나 동작하지 않음</h3></div>
+      <div class="f-loc">상품 상세 하단 구매툴 / 목록의 장바구니 아이콘</div>
+      <blockquote>박민준: &quot;&#39;장바구니 담기&#39; 버튼은 읽히지 않고 &#39;구매하기&#39;만 있다... 여기서 멈춘다.&quot; / 이대리: &quot;장바구니 버튼이 안 보인다... 시간 없어서 포기.&quot; / Emily: 목록의 장바구니 아이콘이 담기 대신 다른 상품 상세로 이동함(&quot;the cart icon didn&#39;t add anything&quot;).</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">박민준</span><span class="chip">이대리</span><span class="chip">Emily</span></span><span class="fix">개선안: 상세 구매툴에 &#39;구매하기&#39;와 같은 비중으로 &#39;장바구니 담기&#39;를 두고(이름 있는 button), 담긴 뒤 안내와 &#39;장바구니 보기&#39; 링크를 제공한다. 목록 장바구니 아이콘은 실제로 담거나 옵션 시트를 띄운다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>뒤로가기/화면 이동 시 정렬·스크롤 상태가 초기화되고 정렬 적용 절차가 번거로움</h3></div>
+      <div class="f-loc">정렬 시트 / 뒤로가기 / 검색→카테고리 이동</div>
+      <blockquote>Emily: &quot;It&#39;s sorted by best sellers again... I have to redo the sort.&quot; (URL은 sort=PRICE_LOW 그대로). 이대리: &quot;아까 정한 건 안 따라오나.&quot; &quot;또 같은 걸 하네.&quot; &#39;적용하기&#39;를 따로 눌러야 함.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">Emily</span><span class="chip">이대리</span></span><span class="fix">개선안: 뒤로가기와 화면 이동 후에도 정렬과 스크롤 위치를 유지하고 URL과 화면 상태를 일치시킨다. 정렬 항목 선택 시 즉시 적용한다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>첫 화면 팝업이 화면을 가리고 닫기 버튼이 작거나 접근성 안내가 없음</h3></div>
+      <div class="f-loc">메인 첫 화면 팝업</div>
+      <blockquote>김순자: &quot;&#39;닫기&#39;가 너무 작고 흐려서 안 눌린다.&quot; 박민준: 팝업 안내·포커스 이동이 없어 &quot;눌러도 반응이 없다.&quot; Emily: 닫기가 작은 회색 글씨이고 검색이 막힘. 이대리: 팝업과 바텀시트가 겹쳐 뜸.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">김순자</span><span class="chip">박민준</span><span class="chip">Emily</span><span class="chip">이대리</span></span><span class="fix">개선안: 크고 진한 ✕ 닫기 버튼을 두고 팝업은 하나만 띄운다. 팝업은 role=dialog와 aria-modal, 포커스 이동, 뒤쪽 inert 처리를 적용한다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>설치비 포함/별도 정보가 불명확함</h3></div>
+      <div class="f-loc">상품 목록·상세의 설치비 표기</div>
+      <blockquote>이대리: 설치비가 작은 글씨로 흩어져 &quot;설치비가 따로 드는지 한눈에 알기 어렵다.&quot; Emily: &quot;I never found out whether installation costs extra.&quot; 박민준: &quot;상세에서는 설치비가 따로 드는지 확인이 안 된다.&quot;</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">이대리</span><span class="chip">Emily</span><span class="chip">박민준</span></span><span class="fix">개선안: 카드와 상세 상단에 &#39;설치비 포함/별도&#39; 배지를 하나로 통일해 표시하고 텍스트로도 분명히 적는다.</span></div>
+    </li>
+    <li class="finding sev-minor">
+      <div class="f-head"><span class="sev">경미</span><h3>새 탭이 열리는데 안내가 없음</h3></div>
+      <div class="f-loc">상품 목록에서 상품 클릭</div>
+      <blockquote>박민준: &quot;탭이 바뀐 걸 스스로 알아내야 했다.&quot; 이대리: &quot;왜 새 창이 뜨지? 원래 화면은 그대로 있잖아.&quot; Emily: &quot;It opened in a new tab and my screen didn&#39;t change.&quot;</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">박민준</span><span class="chip">이대리</span><span class="chip">Emily</span></span><span class="fix">개선안: 같은 탭에서 이동하거나 새 창으로 열린다는 안내를 제공한다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>서비스 상품과 에어컨 본체·액세서리의 구분이 안 됨</h3></div>
+      <div class="f-loc">검색 결과 - 점검 서비스 상품 / 목록 상품 유형 표시</div>
+      <blockquote>김순자: &quot;점검을 받는 건지 사는 건지 모르겠다.&quot; Emily: 에어컨 커버·에어커튼·선풍기가 섞여 있고 상품 유형 표시가 없음. 박민준: 이동식과 &#39;2IN1 조합용&#39;이 단독 사용 가능한지 알 수 없음.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">김순자</span><span class="chip">Emily</span><span class="chip">박민준</span><span class="chip">이대리</span></span><span class="fix">개선안: 카드마다 상품 유형 칩(벽걸이/이동식/액세서리/서비스)을 붙이고, 서비스·조합용은 이름 앞에 크게 표시한다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>검색 진입과 검색 품질 문제(두 번 탭, 로딩 무반응, 영문 검색 실패)</h3></div>
+      <div class="f-loc">메인 검색창 / 검색 결과</div>
+      <blockquote>김순자: &quot;또 칸을 눌러야 글씨가 써지네.&quot; &quot;아무것도 안 나온다. 고장났나?&quot; 이대리: 검색창이 &#39;검색과정&#39; 화면으로 한 번 더 이동함. Emily: &#39;air conditioner&#39; 검색에 청소용품만 나옴. 박민준: 검색창이 &#39;search&#39;로만 읽혀 검색을 쓰지 않음.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">김순자</span><span class="chip">이대리</span><span class="chip">Emily</span><span class="chip">박민준</span></span><span class="fix">개선안: 검색창을 누르면 바로 입력되게 하고, 로딩 안내 문구를 넣는다. 영문 키워드를 카테고리에 매핑하고 입력칸에 label을 붙인다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>정렬 컨트롤의 발견성·이해도 부족</h3></div>
+      <div class="f-loc">정렬 버튼/시트</div>
+      <blockquote>김순자: 정렬이 작은 &#39;추천순&#39; 글씨 하나뿐임. 박민준: 정렬 버튼 이름이 현재 값(&#39;판매량순&#39;)이라 정렬 변경 버튼인지 알기 어려움. Emily: &quot;There&#39;s no icon or &#39;$&#39;. I&#39;m guessing 4th is &#39;low price&#39;.&quot;</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">김순자</span><span class="chip">박민준</span><span class="chip">Emily</span></span><span class="fix">개선안: 눈에 띄는 &#39;낮은 가격순&#39; 버튼이나 ↑↓ 아이콘을 두고, 스크린리더에는 &#39;정렬 선택, 현재 ○○&#39;로 이름을 붙인다.</span></div>
+    </li>
+    <li class="finding sev-major">
+      <div class="f-head"><span class="sev">주요</span><h3>목록 항목의 스크린리더 구조가 부실하고 가격 비교가 어려움</h3></div>
+      <div class="f-loc">상품 목록 항목</div>
+      <blockquote>링크 하나에 상품명·가격·배송·&#39;장바구니&#39;가 이어져 읽히고 javascript:void(0) 링크이며, 위쪽 항목은 이름 없는 button임. 정가·할인가·최대혜택가가 한꺼번에 읽힘.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">박민준</span></span><span class="fix">개선안: 상품명 링크, 가격, &#39;○○ 장바구니 담기&#39; 버튼을 분리하고 정가와 할인가를 구분해 읽히게 한다.</span></div>
+    </li>
+    <li class="finding sev-minor">
+      <div class="f-head"><span class="sev">경미</span><h3>필터 용어가 어렵고 상품 목록 위 배너가 과다함</h3></div>
+      <div class="f-loc">검색 필터 / 카테고리 상단</div>
+      <blockquote>김순자: &#39;냉방면적(평)&#39;, &#39;인버터/정속형&#39; 같은 용어의 뜻을 알기 어려움. Emily: 목록·정렬에 닿기까지 배너와 랭킹 위젯을 많이 지나야 함.</blockquote>
+      <div class="f-foot"><span class="who"><span class="chip">김순자</span><span class="chip">Emily</span></span><span class="fix">개선안: &#39;작은 방(5평 이하)&#39;처럼 쉬운 말로 바꾸고 용어 설명을 붙인다. 배너를 접어 목록과 정렬을 위로 올린다.</span></div>
+    </li></ol></section>
+
+<section><h2>페르소나별 여정과 녹화</h2>
+    <details class="run" open>
+      <summary><span class="pill bad">포기</span><b>김순자 (72세)</b><span class="muted">최저가 에어컨 장바구니 담기 · 121초 · 행동 10회</span></summary>
+      <div class="run-body">
+        <div class="journey">
+          
+            <div class="step">
+              <span class="no">1</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>사이트 열기</div><div class="s-thought">“화면이 파랗고 글씨가 많네. 아래에 큰 광고창이 떠서 뭘 눌러야 할지 모르겠다.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">2</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인 팝업</span>&#39;닫기&#39; 글씨를 눌러 보려 했으나 안 눌림. &#39;오늘은 그만 보기&#39;를 누름</div><div class="s-thought">“&#39;닫기&#39;가 너무 작고 흐려서 안 눌린다. 그만 보기를 눌렀더니 사라졌다. 다행이다.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">3</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>위쪽 검색창 누름</div><div class="s-thought">“&#39;가전수리비...&#39;라고 적혀 있는 칸이 검색인가 보다. 눌렀더니 다른 화면으로 넘어갔다.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">4</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 첫 화면</span>검색칸을 한 번 더 누르고 &#39;에어컨&#39; 입력 후 엔터</div><div class="s-thought">“또 칸을 눌러야 글씨가 써지네. 쉬운 말로 &#39;에어컨&#39;이라고 쳤다.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">5</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 결과(로딩)</span>흰 화면과 빙글빙글 도는 표시를 두 번 기다림</div><div class="s-thought">“아무것도 안 나온다. 고장났나?”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">6</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 결과</span>&#39;추천순&#39;을 눌러 정렬 창을 염</div><div class="s-thought">“에어컨이 위에 나오기는 하는데 200만원이 넘는다. 싼 것부터 보려면 &#39;추천순&#39;을 눌러야 하나 보다.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">7</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 창</span>&#39;낮은가격순&#39; 선택 후 &#39;적용하기&#39;</div><div class="s-thought">“이건 알겠다. 낮은 가격순을 골랐다.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">8</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 결과(낮은가격순)</span>화면 내려 봄</div><div class="s-thought">“에어컨이 아니라 커버, 청소 서비스, 목도리가 나온다. 이게 에어컨인가?”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">9</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 결과</span>한 번 더 내림</div><div class="s-thought">“&#39;에어컨 점검 15,000원&#39;이 나온다. 이건 에어컨을 사는 건지 점검을 받는 건지 모르겠다. 진짜 에어컨은 안 보인다.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">10</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 결과</span>세 화면째 못 찾아 포기</div><div class="s-thought">“세 번 내려봤는데도 에어컨이 없다. 딸에게 물어봐야겠다.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+          
+          <p class="quote">“에어컨을 사려고 했는데 커버랑 청소 서비스만 나오니 뭐가 뭔지 모르겠어요. 이건 딸한테 시켜야겠네.”</p>
+        </div>
+        <video controls preload="metadata" src="elder__aircon-cheapest-cart__1/video/session.webm"></video>
+      </div>
+    </details>
+    <details class="run" open>
+      <summary><span class="pill bad">진행불가</span><b>박민준 (38세, 전맹 시각장애인)</b><span class="muted">최저가 에어컨 장바구니 담기 · 145초 · 행동 14회</span></summary>
+      <div class="run-body">
+        <div class="journey">
+          
+            <div class="step">
+              <span class="no">1</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>https://www.e-himart.co.kr/app/display/main 열기</div><div class="s-thought">“페이지가 엄청 길다. 처음에 뭐가 읽히는지 모르겠다. 검색창은 이름만 &#39;검색어 입력&#39;이고 입력칸이라고 안 읽힌다.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">2</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>하단 &#39;카테고리&#39; 링크 클릭 시도</div><div class="s-thought">“눌러도 반응이 없다. 팝업이 가로막고 있다는 안내는 없었다.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">3</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>&#39;닫기&#39; 버튼으로 이벤트 팝업 닫음</div><div class="s-thought">“&#39;오늘은 그만 보기&#39;와 &#39;닫기&#39;가 있어서 닫았다. 팝업이 떴다는 안내를 못 들었으니 한참 헤맸을 것 같다.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">4</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>&#39;카테고리&#39; 링크 클릭</div><div class="s-thought">“카테고리 레이어가 열렸다.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">5</span>
+              <div class="s-main"><div class="s-act"><span class="page">카테고리 레이어</span>&#39;에어컨·계절가전&#39; 버튼 클릭</div><div class="s-thought">“그룹 이름 버튼이 있어서 눌렀다.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">6</span>
+              <div class="s-main"><div class="s-act"><span class="page">카테고리 레이어</span>&#39;에어컨&#39; 링크 클릭</div><div class="s-thought">“에어컨 목록 페이지로 이동했다.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">7</span>
+              <div class="s-main"><div class="s-act"><span class="page">에어컨 목록</span>정렬 버튼 &#39;판매량순&#39; 클릭</div><div class="s-thought">“버튼 이름이 현재 정렬 기준인 &#39;판매량순&#39;이다. 정렬을 바꾸는 버튼인지 짐작으로 눌러 봤다.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">8</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 레이어</span>&#39;낮은가격순&#39; 라디오 선택</div><div class="s-thought">“라디오 목록이 나왔다.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">9</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 레이어</span>&#39;적용하기&#39; 클릭</div><div class="s-thought">“정렬이 적용됐다.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">10</span>
+              <div class="s-main"><div class="s-act"><span class="page">에어컨 목록(낮은가격순)</span>목록 읽기</div><div class="s-thought">“에어컨 카테고리인데 맨 앞이 리모컨 11,900원, 바람막이, 받침대, 실링팬, 에어커튼 같은 액세서리다. 가장 싼 에어컨이 뭔지 찾으려면 계속 걸러야 한다. 앞쪽 항목은 &#39;장바구니&#39;가 링크 이름 끝에 붙어 읽힌다.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">11</span>
+              <div class="s-main"><div class="s-act"><span class="page">에어컨 목록(낮은가격순)</span>보국 에어젯 이동식에어컨 275,000원 링크 클릭</div><div class="s-thought">“본체 가운데 제일 싼 건 이동식 에어컨 275,000원이다. 그런데 방에 &#39;다는&#39; 에어컨이 아니라 이동식이다. 그다음 286,900원 LG 벽걸이는 &#39;2IN1 조합용&#39;이라 단독으로 쓰는 건지 모르겠다. 내가 대신 판단하면 안 되니 일단 가장 싼 본체를 열었다. 새 탭이 열렸다는 안내는 없었다.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">12</span>
+              <div class="s-main"><div class="s-act"><span class="page">상품 상세</span>새 탭으로 전환</div><div class="s-thought">“탭이 바뀐 걸 스스로 알아내야 했다.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">13</span>
+              <div class="s-main"><div class="s-act"><span class="page">상품 상세</span>&#39;구매하기&#39; 버튼 클릭</div><div class="s-thought">“&#39;장바구니 담기&#39; 버튼은 읽히지 않고 &#39;구매하기&#39;만 있다. 설치비는 상품명에 &#39;무료설치&#39;라고만 나오고, 따로 드는지는 본문에서 확인이 안 된다. 일단 구매하기를 눌러 본다.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">14</span>
+              <div class="s-main"><div class="s-act"><span class="page">상품 상세(구매툴)</span>합계 275,000원 옆 &#39;구매하기&#39; 클릭</div><div class="s-thought">“장바구니 담기 버튼이 없다. 눌렀더니 주소만 바뀌고 배송지·배송가능지역조회 쪽 화면이 열린다. 주소 입력은 하면 안 되고, 장바구니에 담긴 것도 확인할 수 없다. 여기서 멈춘다.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+          
+          <p class="quote">“에어컨 목록까지는 어떻게든 갔는데, 정작 상세 페이지에 &#39;장바구니 담기&#39;가 안 읽히고 &#39;구매하기&#39;만 나오니 더는 못 가겠네요. 제일 싼 에어컨이 뭔지도 리모컨이랑 섞여 있어서 확신이 안 섰고요.”</p>
+        </div>
+        <video controls preload="metadata" src="blind__aircon-cheapest-cart__1/video/session.webm"></video>
+      </div>
+    </details>
+    <details class="run" open>
+      <summary><span class="pill bad">포기</span><b>이대리 (34세, 점심시간에 급하게 주문하는 직장인)</b><span class="muted">최저가 에어컨 장바구니 담기 · 162초 · 행동 15회</span></summary>
+      <div class="run-body">
+        <div class="journey">
+          
+            <div class="step">
+              <span class="no">1</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>앱 설치/일요배송 팝업 &#39;닫기&#39; 클릭</div><div class="s-thought">“팝업부터 치우자. 시작부터 뭐가 많네.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">2</span>
+              <div class="s-main"><div class="s-act"><span class="page">메인</span>상단 검색창 클릭</div><div class="s-thought">“에어컨 검색이 제일 빠르지.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">3</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색 화면</span>&#39;에어컨&#39; 입력 후 엔터</div><div class="s-thought">“검색 한 번이면 되겠지.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">4</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색결과</span>정렬 &#39;추천순&#39; 클릭</div><div class="s-thought">“가장 싼 걸 찾아야 하니 가격순으로 바꾸자.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">5</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 시트</span>&#39;낮은가격순&#39; 선택</div><div class="s-thought">“이거다.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">6</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 시트</span>&#39;적용하기&#39; 클릭</div><div class="s-thought">“선택만 하면 바로 되는 줄 알았는데 한 번 더 눌러야 하네.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">7</span>
+              <div class="s-main"><div class="s-act"><span class="page">검색결과(가격순)</span>맨 위 결과 확인 후 하단 &#39;카테고리&#39; 클릭</div><div class="s-thought">“위에 에어컨 커버, 선풍기, 멀티탭, 방향제, 청소 서비스만 나온다. 에어컨 본체는 하나도 안 보여. 카테고리로 가자.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">8</span>
+              <div class="s-main"><div class="s-act"><span class="page">카테고리 레이어</span>&#39;에어컨·계절가전&#39; 클릭</div><div class="s-thought">“에어컨은 여기 있겠지.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">9</span>
+              <div class="s-main"><div class="s-act"><span class="page">카테고리 레이어</span>&#39;에어컨&#39; 클릭</div><div class="s-thought">“드디어 에어컨 목록.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">10</span>
+              <div class="s-main"><div class="s-act"><span class="page">에어컨 목록</span>정렬 &#39;판매량순&#39; 버튼 클릭</div><div class="s-thought">“여기서도 가격순을 다시 골라야 하네. 아까 정한 건 안 따라오나.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">11</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 시트</span>&#39;낮은가격순&#39; 선택</div><div class="s-thought">“또 같은 걸 하네.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">12</span>
+              <div class="s-main"><div class="s-act"><span class="page">정렬 시트</span>&#39;적용하기&#39; 클릭</div><div class="s-thought">“이제 싼 에어컨이 나오겠지.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">13</span>
+              <div class="s-main"><div class="s-act"><span class="page">에어컨 목록(가격순)</span>가장 싼 에어컨 본체로 보이는 &#39;보국 에어젯 이동식에어컨 275,000원&#39; 클릭</div><div class="s-thought">“맨 위는 리모컨 11,900원, 바람막이, 커버, 에어커튼, 실링팬이다. 에어컨 카테고리인데 에어컨이 아닌 게 한참 나오네. 실제 에어컨은 여기서부터인 듯. 설치비는 &#39;희망일설치 무료설치&#39;라고 쓰여 있긴 한데 정확히 안 읽힘. 이걸로 하자.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">14</span>
+              <div class="s-main"><div class="s-act"><span class="page">새 탭</span>새로 열린 상품 탭으로 전환</div><div class="s-thought">“왜 새 창이 뜨지? 원래 화면은 그대로 있잖아.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">15</span>
+              <div class="s-main"><div class="s-act"><span class="page">상품 상세</span>큰 &#39;구매하기&#39; 버튼 클릭</div><div class="s-thought">“장바구니 버튼이 안 보인다. 구매하기를 눌렀더니 &#39;일요배송 안내&#39; 창이 뜨고 합계 275,000원만 나온다. 장바구니에 담겼는지 모르겠고 행동 횟수도 끝났다. 시간 없어서 포기.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+          
+          <p class="quote">“에어컨 찾으러 왔는데 리모컨이랑 에어컨 커버부터 나오고, 장바구니 버튼은 찾지도 못했어요. 점심시간 다 갔네요.”</p>
+        </div>
+        <video controls preload="metadata" src="busy__aircon-cheapest-cart__1/video/session.webm"></video>
+      </div>
+    </details>
+    <details class="run" open>
+      <summary><span class="pill bad">포기</span><b>Emily (29세, 한국 거주 3개월 차 미국인)</b><span class="muted">최저가 에어컨 장바구니 담기 · 224초 · 행동 29회</span></summary>
+      <div class="run-body">
+        <div class="journey">
+          
+            <div class="step">
+              <span class="no">1</span>
+              <div class="s-main"><div class="s-act"><span class="page">Home</span>Opened the start URL</div><div class="s-thought">“Okay, a Korean shopping site. A big blue popup covers half the screen and I can&#39;t read any of it.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">2</span>
+              <div class="s-main"><div class="s-act"><span class="page">Home popup</span>Tapped the small gray text at the bottom left of the popup, guessing it closes it</div><div class="s-thought">“There&#39;s a big black button, but it looks like an ad. I&#39;ll try the small gray text instead. Lucky guess, it closed.”</div></div>
+              <span class="meter" title="짜증 2/5" aria-label="짜증 2/5"><i class="on l2"></i><i class="on l2"></i><i class=" l2"></i><i class=" l2"></i><i class=" l2"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">3</span>
+              <div class="s-main"><div class="s-act"><span class="page">Home</span>Tapped the search bar at the top</div><div class="s-thought">“The magnifier icon is the search bar. The placeholder text is Korean, so I don&#39;t know what it says.”</div></div>
+              <span class="meter" title="짜증 1/5" aria-label="짜증 1/5"><i class="on l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i><i class=" l1"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">4</span>
+              <div class="s-main"><div class="s-act"><span class="page">Search</span>Typed &#39;air conditioner&#39; and pressed Enter</div><div class="s-thought">“English search should work. I got cleaning products and an air conditioner cleaner, and no air conditioners. This isn&#39;t working.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">5</span>
+              <div class="s-main"><div class="s-act"><span class="page">Search results</span>Tapped the menu icon (three lines) in the bottom bar</div><div class="s-thought">“Search failed, so I&#39;ll try the category menu. Hopefully there is an AC section.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">6</span>
+              <div class="s-main"><div class="s-act"><span class="page">Category menu</span>Tapped the left item that looks like &#39;air-con&#39; when I sound out the Hangul</div><div class="s-thought">“I can&#39;t really read this. The second word sounds like &#39;air-con&#39;, so I&#39;ll try it. I&#39;m only guessing.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">7</span>
+              <div class="s-main"><div class="s-act"><span class="page">Category menu</span>Tapped the first item in the submenu</div><div class="s-thought">“The first item has the same word, so I&#39;ll tap it and hope it&#39;s the product list.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">8</span>
+              <div class="s-main"><div class="s-act"><span class="page">Air conditioner category</span>Opened the sort button next to the product list</div><div class="s-thought">“I need to sort by price. The top of the page is banners and a ranking list that I don&#39;t understand. I found a sort sheet with 5 Korean options.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">9</span>
+              <div class="s-main"><div class="s-act"><span class="page">Sort sheet</span>Picked the 4th option</div><div class="s-thought">“There&#39;s no icon or &#39;$&#39;. I&#39;m guessing 4th is &#39;low price&#39;. It could also be &#39;high price&#39;, and I can&#39;t tell.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">10</span>
+              <div class="s-main"><div class="s-act"><span class="page">Sort sheet</span>Tapped the big black button at the bottom</div><div class="s-thought">“This is probably Apply. The list reordered, so the guess may have been right.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">11</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“The cheapest items are 11,900 won and 21,800 won. They&#39;re a remote control and a plastic wind guard, not air conditioners.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">12</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down again</div><div class="s-thought">“More accessories at 24,800 to 44,550 won: a window shelf and ceiling fans for the AC unit. Where are the real ACs?”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">13</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down again</div><div class="s-thought">“Now I see 279,500 won and up. These look like air curtains and wall units, and I&#39;m not sure which are household ACs.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">14</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled back up one page</div><div class="s-thought">“There&#39;s a portable unit at 275,000 won that looks like a real air conditioner. A standing fan at 178,200 won is not one. I&#39;ll go with 275,000.”</div></div>
+              <span class="meter" title="짜증 3/5" aria-label="짜증 3/5"><i class="on l3"></i><i class="on l3"></i><i class="on l3"></i><i class=" l3"></i><i class=" l3"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">15</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Tapped what I thought was the cart icon on that item</div><div class="s-thought">“It opened a different product page, a PLUX wall unit at 464,070 won. That&#39;s not the one I wanted, and the cart icon didn&#39;t add anything.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">16</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product detail</span>Scrolled down to find the price</div><div class="s-thought">“464,070 won is much more than 275,000 won. Wrong item.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">17</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product detail</span>Went back</div><div class="s-thought">“Back to the list. The page reloaded.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">18</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“Is this the top of the page? The sort is gone and the order is different.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">19</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“It&#39;s sorted by best sellers again, with 1.2 to 1.8 million won items. I&#39;ll have to sort again.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">20</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“Prices are in the millions and the sort reset. I have to redo the sort.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">21</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Opened the sort button again</div><div class="s-thought">“Doing this again. This is tiring.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">22</span>
+              <div class="s-main"><div class="s-act"><span class="page">Sort sheet</span>Picked the 4th option</div><div class="s-thought">“Same guess as before.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">23</span>
+              <div class="s-main"><div class="s-act"><span class="page">Sort sheet</span>Tapped the black button</div><div class="s-thought">“Apply. The list is re-sorted.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">24</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“Accessories again. I keep scrolling.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">25</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“Still scrolling past the accessories.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">26</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled down</div><div class="s-thought">“I overshot to 279,500 won and up.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">27</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Scrolled up one page</div><div class="s-thought">“The 275,000 won portable AC is back in view, at the bottom of the screen.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">28</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Tapped the product image</div><div class="s-thought">“I&#39;ll open it and look for a cart or buy button.”</div></div>
+              <span class="meter" title="짜증 4/5" aria-label="짜증 4/5"><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class="on l4"></i><i class=" l4"></i></span>
+            </div>
+            <div class="step">
+              <span class="no">29</span>
+              <div class="s-main"><div class="s-act"><span class="page">Product list</span>Looked at the screen</div><div class="s-thought">“It opened in a new tab and my screen didn&#39;t change. I almost out of steps. I also never saw whether installation is extra, and I never reached the cart. I give up.”</div></div>
+              <span class="meter" title="짜증 5/5" aria-label="짜증 5/5"><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i><i class="on l5"></i></span>
+            </div>
+          
+          <p class="quote">“I found the air conditioner section by sounding out the letters, but the &#39;cheapest&#39; list is full of remote controls and plastic parts, so I could never tell which one was a real air conditioner. I ran out of steps before I reached the cart. I also never found out whether installation costs extra.”</p>
+        </div>
+        <video controls preload="metadata" src="foreigner__aircon-cheapest-cart__1/video/session.webm"></video>
+      </div>
+    </details></section>
+</div></body></html>

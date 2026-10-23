@@ -1,0 +1,276 @@
+{
+  "id": "foreigner__aircon-cheapest-cart__1",
+  "persona": "foreigner",
+  "personaName": "Emily (29세, 한국 거주 3개월 차 미국인)",
+  "goal": "aircon-cheapest-cart",
+  "goalTitle": "최저가 에어컨 장바구니 담기",
+  "n": 1,
+  "seconds": 224,
+  "toolCalls": 66,
+  "costUsd": 0.7353851000000002,
+  "video": "foreigner__aircon-cheapest-cart__1/video/session.webm",
+  "outcome": "gave_up",
+  "actions_used": 29,
+  "journey": [
+    {
+      "step": 1,
+      "page": "Home",
+      "action": "Opened the start URL",
+      "thought": "Okay, a Korean shopping site. A big blue popup covers half the screen and I can't read any of it.",
+      "frustration": 1
+    },
+    {
+      "step": 2,
+      "page": "Home popup",
+      "action": "Tapped the small gray text at the bottom left of the popup, guessing it closes it",
+      "thought": "There's a big black button, but it looks like an ad. I'll try the small gray text instead. Lucky guess, it closed.",
+      "frustration": 2
+    },
+    {
+      "step": 3,
+      "page": "Home",
+      "action": "Tapped the search bar at the top",
+      "thought": "The magnifier icon is the search bar. The placeholder text is Korean, so I don't know what it says.",
+      "frustration": 1
+    },
+    {
+      "step": 4,
+      "page": "Search",
+      "action": "Typed 'air conditioner' and pressed Enter",
+      "thought": "English search should work. I got cleaning products and an air conditioner cleaner, and no air conditioners. This isn't working.",
+      "frustration": 3
+    },
+    {
+      "step": 5,
+      "page": "Search results",
+      "action": "Tapped the menu icon (three lines) in the bottom bar",
+      "thought": "Search failed, so I'll try the category menu. Hopefully there is an AC section.",
+      "frustration": 3
+    },
+    {
+      "step": 6,
+      "page": "Category menu",
+      "action": "Tapped the left item that looks like 'air-con' when I sound out the Hangul",
+      "thought": "I can't really read this. The second word sounds like 'air-con', so I'll try it. I'm only guessing.",
+      "frustration": 3
+    },
+    {
+      "step": 7,
+      "page": "Category menu",
+      "action": "Tapped the first item in the submenu",
+      "thought": "The first item has the same word, so I'll tap it and hope it's the product list.",
+      "frustration": 3
+    },
+    {
+      "step": 8,
+      "page": "Air conditioner category",
+      "action": "Opened the sort button next to the product list",
+      "thought": "I need to sort by price. The top of the page is banners and a ranking list that I don't understand. I found a sort sheet with 5 Korean options.",
+      "frustration": 3
+    },
+    {
+      "step": 9,
+      "page": "Sort sheet",
+      "action": "Picked the 4th option",
+      "thought": "There's no icon or '$'. I'm guessing 4th is 'low price'. It could also be 'high price', and I can't tell.",
+      "frustration": 4
+    },
+    {
+      "step": 10,
+      "page": "Sort sheet",
+      "action": "Tapped the big black button at the bottom",
+      "thought": "This is probably Apply. The list reordered, so the guess may have been right.",
+      "frustration": 3
+    },
+    {
+      "step": 11,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "The cheapest items are 11,900 won and 21,800 won. They're a remote control and a plastic wind guard, not air conditioners.",
+      "frustration": 4
+    },
+    {
+      "step": 12,
+      "page": "Product list",
+      "action": "Scrolled down again",
+      "thought": "More accessories at 24,800 to 44,550 won: a window shelf and ceiling fans for the AC unit. Where are the real ACs?",
+      "frustration": 4
+    },
+    {
+      "step": 13,
+      "page": "Product list",
+      "action": "Scrolled down again",
+      "thought": "Now I see 279,500 won and up. These look like air curtains and wall units, and I'm not sure which are household ACs.",
+      "frustration": 4
+    },
+    {
+      "step": 14,
+      "page": "Product list",
+      "action": "Scrolled back up one page",
+      "thought": "There's a portable unit at 275,000 won that looks like a real air conditioner. A standing fan at 178,200 won is not one. I'll go with 275,000.",
+      "frustration": 3
+    },
+    {
+      "step": 15,
+      "page": "Product list",
+      "action": "Tapped what I thought was the cart icon on that item",
+      "thought": "It opened a different product page, a PLUX wall unit at 464,070 won. That's not the one I wanted, and the cart icon didn't add anything.",
+      "frustration": 4
+    },
+    {
+      "step": 16,
+      "page": "Product detail",
+      "action": "Scrolled down to find the price",
+      "thought": "464,070 won is much more than 275,000 won. Wrong item.",
+      "frustration": 4
+    },
+    {
+      "step": 17,
+      "page": "Product detail",
+      "action": "Went back",
+      "thought": "Back to the list. The page reloaded.",
+      "frustration": 4
+    },
+    {
+      "step": 18,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "Is this the top of the page? The sort is gone and the order is different.",
+      "frustration": 5
+    },
+    {
+      "step": 19,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "It's sorted by best sellers again, with 1.2 to 1.8 million won items. I'll have to sort again.",
+      "frustration": 5
+    },
+    {
+      "step": 20,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "Prices are in the millions and the sort reset. I have to redo the sort.",
+      "frustration": 5
+    },
+    {
+      "step": 21,
+      "page": "Product list",
+      "action": "Opened the sort button again",
+      "thought": "Doing this again. This is tiring.",
+      "frustration": 5
+    },
+    {
+      "step": 22,
+      "page": "Sort sheet",
+      "action": "Picked the 4th option",
+      "thought": "Same guess as before.",
+      "frustration": 4
+    },
+    {
+      "step": 23,
+      "page": "Sort sheet",
+      "action": "Tapped the black button",
+      "thought": "Apply. The list is re-sorted.",
+      "frustration": 4
+    },
+    {
+      "step": 24,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "Accessories again. I keep scrolling.",
+      "frustration": 4
+    },
+    {
+      "step": 25,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "Still scrolling past the accessories.",
+      "frustration": 4
+    },
+    {
+      "step": 26,
+      "page": "Product list",
+      "action": "Scrolled down",
+      "thought": "I overshot to 279,500 won and up.",
+      "frustration": 4
+    },
+    {
+      "step": 27,
+      "page": "Product list",
+      "action": "Scrolled up one page",
+      "thought": "The 275,000 won portable AC is back in view, at the bottom of the screen.",
+      "frustration": 4
+    },
+    {
+      "step": 28,
+      "page": "Product list",
+      "action": "Tapped the product image",
+      "thought": "I'll open it and look for a cart or buy button.",
+      "frustration": 4
+    },
+    {
+      "step": 29,
+      "page": "Product list",
+      "action": "Looked at the screen",
+      "thought": "It opened in a new tab and my screen didn't change. I almost out of steps. I also never saw whether installation is extra, and I never reached the cart. I give up.",
+      "frustration": 5
+    }
+  ],
+  "issues": [
+    {
+      "severity": "critical",
+      "location": "Air conditioner category, sorted by lowest price",
+      "problem": "The lowest-price sort puts remote controls, wind guards, brackets and ceiling fans (11,900 to 45,000 won) above all real air conditioners. The first actual air conditioner, a portable unit, only appears about 3 screens down at 275,000 won. A shopper who can't read the labels takes the first item as the cheapest air conditioner.",
+      "suggestion": "Exclude accessories from the main 'Air conditioner' list by default, or show them under their own tab (there is an accessories chip, 에어컨액세서리). Add a 'main units only' filter."
+    },
+    {
+      "severity": "critical",
+      "location": "Product list cart icon and product image",
+      "problem": "The cart icon in the MD-recommended carousel opened a product detail page instead of adding to the cart. Tapping a product image opened a new browser tab and left the screen unchanged, with no sign that anything happened. I never reached the cart within 30 actions.",
+      "suggestion": "Make the cart icon add the item, or open an obvious option sheet. Open product pages in the same tab, or make it clear that a new tab opened."
+    },
+    {
+      "severity": "major",
+      "location": "Sort setting after going back",
+      "problem": "After opening a product and going back, the sort reset to best sellers (판매량순) and the scroll position was lost, even though the URL still said sort=PRICE_LOW. The URL and the page disagreed. I had to redo the sort and scroll again, which used up many of my 30 actions.",
+      "suggestion": "Keep the sort selection and scroll position after Back, and keep the URL and the page in sync."
+    },
+    {
+      "severity": "major",
+      "location": "Search results for 'air conditioner'",
+      "problem": "The English query returned cleaning products and an air conditioner cleaner, not air conditioners. Search doesn't handle English words, and a non-Korean speaker has no hint to try 에어컨.",
+      "suggestion": "Map English keywords such as 'air conditioner' and 'aircon' to the category. Show a 'did you mean' with category suggestions."
+    },
+    {
+      "severity": "major",
+      "location": "Sort sheet",
+      "problem": "All five sort options are Korean text only. The 4th and 5th options, low price and high price, look almost the same, so a non-Korean speaker can only guess which is cheapest first.",
+      "suggestion": "Add arrows or icons (↑↓) and a currency symbol, or English labels next to the Korean ones. Put 'Low price' where it is easy to find."
+    },
+    {
+      "severity": "major",
+      "location": "Home popup",
+      "problem": "The popup covers half the screen. The only dismiss control is small gray text, 'Close' next to 'Don't show today', and the big black button invites a click on the ad. Search is blocked until it is closed.",
+      "suggestion": "Add a clear ✕ icon and make the close control as prominent as the ad button."
+    },
+    {
+      "severity": "major",
+      "location": "Whole site (installation costs)",
+      "problem": "Installation cost wording is long Korean text like '전국기본설치비 포함' or '기본설치비무료', hidden in product names or small gray tags. I couldn't tell whether installation was extra, which was one of my goals.",
+      "suggestion": "Use a clear labeled line such as 'Installation: included / extra' with a standard icon, and an English option."
+    },
+    {
+      "severity": "minor",
+      "location": "Category menu",
+      "problem": "Many categories, ranking widgets and banners sit between the top of the page and the product list. The sort control is far below the top of the page, so I scrolled a lot to reach it.",
+      "suggestion": "Put the product list and sort higher on the page, and collapse banners."
+    },
+    {
+      "severity": "minor",
+      "location": "Product list",
+      "problem": "The list mixes real air conditioners with air curtains (commercial units), standing fans and portable units under one heading, with no label for what each product is.",
+      "suggestion": "Add type chips on each product (wall-mounted, portable, window, accessory). The type tabs at the top, such as wall-mounted and portable, exist, so make them more visible."
+    }
+  ],
+  "quote": "I found the air conditioner section by sounding out the letters, but the 'cheapest' list is full of remote controls and plastic parts, so I could never tell which one was a real air conditioner. I ran out of steps before I reached the cart. I also never found out whether installation costs extra."
+}

@@ -1,0 +1,35 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #222; background: #fafafa; }
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+#header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #fff; border-bottom: 2px solid #e60012; position: sticky; top: 0; z-index: 5; }
+.logo { font-weight: 800; color: #e60012; text-decoration: none; font-size: 20px; white-space: nowrap; }
+.logo small { font-size: 10px; margin-left: 4px; color: #999; }
+.search { flex: 1; display: flex; min-width: 0; }
+.search input { flex: 1; min-width: 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; }
+.search button { padding: 8px 12px; border: 0; background: #e60012; color: #fff; border-radius: 0 4px 4px 0; }
+.cart-icon { position: relative; cursor: pointer; color: #333; }
+.badge { position: absolute; top: -6px; right: -8px; background: #e60012; color: #fff; font-size: 11px; border-radius: 9px; padding: 0 5px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px; text-decoration: none; color: inherit; display: block; }
+.card .img { font-size: 48px; text-align: center; padding: 12px 0; }
+.card .price { font-weight: 700; margin-top: 6px; }
+.btn { display: inline-block; padding: 12px 18px; background: #e60012; color: #fff; border: 0; border-radius: 6px; font-size: 16px; text-decoration: none; cursor: pointer; }
+.btn.gray { background: #666; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; gap: 8px; }
+.total { font-size: 20px; font-weight: 800; }
+.empty { padding: 40px 0; text-align: center; color: #888; }
+/* 함정: 쿠폰 적용 링크는 10px 연회색 글씨 */
+.coupon-link { font-size: 10px; color: #bbb; cursor: pointer; }
+.coupon-box { display: none; margin: 8px 0; }
+.coupon-box.open { display: flex; gap: 6px; }
+.popup-dim { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.popup { background: #fff; border-radius: 12px; padding: 28px 24px; width: min(340px, 90vw); position: relative; text-align: center; }
+/* 함정: 닫기 버튼이 작고 흐림 */
+.popup-x { position: absolute; top: 6px; right: 10px; font-size: 14px; color: #ccc; cursor: pointer; }
+.field { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; }
+.field input, .field select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; }
+.hint { font-size: 12px; color: #888; }
+.error { color: #e60012; font-size: 13px; }
+.pay-methods { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.pay { border: 1px solid #ccc; border-radius: 6px; padding: 10px 14px; cursor: pointer; background: #fff; }
+.pay.on { border-color: #e60012; color: #e60012; font-weight: 700; }

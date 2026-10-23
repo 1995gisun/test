@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주문/결제 - 롯데마켓 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<main>
+  <h1 style="font-size:18px">주문/결제</h1>
+  <p id="err" class="error" role="alert"></p>
+  <h2 style="font-size:15px">배송정보</h2>
+  <div class="field"><label for="name">받는 분</label><input id="name"></div>
+  <!-- 함정: 연락처/주소 입력칸은 label 없이 placeholder만 있음 -->
+  <div class="field"><input id="phone" placeholder="휴대폰번호"></div>
+  <div class="field"><input id="addr" placeholder="배송지 주소"></div>
+  <h2 style="font-size:15px">결제수단</h2>
+  <!-- 함정: 결제수단이 버튼/라디오가 아닌 div, 한국어 전문용어만 사용 -->
+  <div class="pay-methods">
+    <div class="pay" data-m="simple">간편결제</div>
+    <div class="pay" data-m="card">신용/체크카드</div>
+    <div class="pay" data-m="bank">무통장입금(가상계좌)</div>
+  </div>
+  <div id="card-box" style="display:none">
+    <div class="field"><input id="card" placeholder="0000-0000-0000-0000"></div>
+    <div class="field"><select id="inst"><option>일시불</option><option>2개월</option><option>3개월</option></select></div>
+  </div>
+  <p class="hint">PG사 인증 후 결제가 진행되며, 에스크로 미동의 시 결제가 제한될 수 있습니다.</p>
+  <label class="hint"><input type="checkbox" id="escrow"> 구매안전서비스(에스크로) 이용 및 전자금융거래 이용약관 동의 (필수)</label>
+  <div class="row total"><span>최종 결제금액</span><span id="amount"></span></div>
+  <p><button class="btn" id="pay">결제하기</button></p>
+</main>
+<script>
+  const cart = loadCart();
+  const amount = Math.max(cart.reduce((s, l) => s + product(l.id).price * l.qty, 0) - Number(localStorage.getItem('coupon') || 0), 0);
+  document.getElementById('amount').textContent = won(amount);
+  let method = '';
+  document.querySelectorAll('.pay').forEach((el) => el.onclick = () => {
+    document.querySelectorAll('.pay').forEach((x) => x.classList.remove('on'));
+    el.classList.add('on'); method = el.dataset.m;
+    document.getElementById('card-box').style.display = method === 'card' ? 'block' : 'none';
+  });
+  document.getElementById('pay').onclick = () => {
+    const err = document.getElementById('err');
+    const phone = document.getElementById('phone').value.trim();
+    // 함정: 하이픈을 넣으면 "형식 오류"라고만 나오고 이유를 알려주지 않음. 오류는 페이지 맨 위에 작게 표시
+    if (!cart.length) return (err.textContent = '장바구니가 비어 있습니다.');
+    if (!document.getElementById('name').value.trim() || !document.getElementById('addr').value.trim()) return (err.textContent = '필수 입력값 누락');
+    if (!/^01\d{8,9}$/.test(phone)) return (err.textContent = '형식 오류');
+    if (!method) return (err.textContent = '결제수단 미선택');
+    if (method === 'card' && !/^\d{4}-?\d{4}-?\d{4}-?\d{4}$/.test(document.getElementById('card').value.trim())) return (err.textContent = '카드정보 오류');
+    if (!document.getElementById('escrow').checked) return (err.textContent = '필수 약관 미동의');
+    const no = 'LM' + Date.now().toString().slice(-8);
+    localStorage.removeItem('cart'); localStorage.removeItem('coupon');
+    location.href = 'done.html?no=' + no + '&amount=' + amount;
+  };
+</script>
+</body>
+</html>

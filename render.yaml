@@ -1,0 +1,24 @@
+# Render Blueprint: persona-qa 웹 화면
+services:
+  - type: web
+    name: persona-qa
+    runtime: docker
+    dockerfilePath: ./persona-qa/Dockerfile
+    dockerContext: ./persona-qa
+    # Chromium + Claude Code를 동시에 여러 개 띄우므로 메모리 2GB 이상이 필요하다.
+    plan: standard
+    healthCheckPath: /api/config
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ACCESS_CODE
+        sync: false
+      - key: MAX_PARALLEL
+        value: "2"
+      - key: DAILY_LIMIT
+        value: "20"
+    # 재배포해도 리포트와 영상이 남도록 결과 폴더를 디스크에 둔다.
+    disk:
+      name: results
+      mountPath: /app/results
+      sizeGB: 5

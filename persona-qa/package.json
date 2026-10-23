@@ -1,0 +1,14 @@
+{
+  "name": "persona-qa",
+  "version": "1.0.0",
+  "description": "AI 가상 고객 테스트단: 페르소나별 AI가 실제 브라우저로 쇼핑몰을 사용해 보고 사용성 문제를 찾는다",
+  "scripts": {
+    "run": "node run.mjs",
+    "report": "node report.mjs"
+  },
+  "dependencies": {
+    "@playwright/mcp": "0.0.83"
+  },
+  "type": "module",
+  "private": true
+}

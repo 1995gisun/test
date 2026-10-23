@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상품 상세 - 롯데마켓 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<main id="detail"></main>
+<script>
+  const p = product(new URLSearchParams(location.search).get('id'));
+  const el = document.getElementById('detail');
+  if (!p) { el.innerHTML = '<div class="empty">상품을 찾을 수 없습니다.</div>'; }
+  else {
+    el.innerHTML = `
+      <div style="font-size:96px;text-align:center">${p.img}</div>
+      <h1 style="font-size:20px">${p.name}</h1>
+      <div class="total">${won(p.price)}</div>
+      <p class="hint">무료배송 · 오늘 주문 시 내일 도착</p>
+      <div class="field"><label for="qty">수량</label>
+        <select id="qty">${[1,2,3,4,5].map((n) => `<option>${n}</option>`).join('')}</select></div>
+      <button class="btn" id="add">장바구니 담기</button>
+      <p id="msg" class="hint" role="status"></p>`;
+    document.getElementById('add').onclick = () => {
+      addToCart(p.id, Number(document.getElementById('qty').value));
+      renderHeader();
+      document.getElementById('msg').textContent = '장바구니에 담았습니다.';
+    };
+  }
+</script>
+</body>
+</html>
